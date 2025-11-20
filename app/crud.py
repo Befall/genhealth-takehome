@@ -13,12 +13,13 @@ def get_orders(db: Session, skip: int = 0, limit: int = 100) -> List[models.Orde
     return db.query(models.Order).offset(skip).limit(limit).all()
 
 
-def create_order(db: Session, order: schemas.OrderCreate) -> models.Order:
+def create_order(db: Session, order: schemas.OrderCreate, user_id: Optional[int] = None) -> models.Order:
     """Create a new order"""
     db_order = models.Order(
         first_name=order.first_name,
         last_name=order.last_name,
-        date_of_birth=order.date_of_birth
+        date_of_birth=order.date_of_birth,
+        created_by_user_id=user_id
     )
     db.add(db_order)
     db.commit()
