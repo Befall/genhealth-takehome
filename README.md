@@ -60,15 +60,11 @@ A live version of this API is available at:
 
 **https://genhealth-takehome-production.up.railway.app**
 
-You can interact with the live API using:
-- **Swagger UI**: https://genhealth-takehome-production.up.railway.app/docs
-- **ReDoc**: https://genhealth-takehome-production.up.railway.app/redoc
+You can interact with the live API using **Swagger UI**: https://genhealth-takehome-production.up.railway.app/docs
 
 ## API Documentation
 
-For local development, once the server is running, you can access:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+For local development, once the server is running, you can access **Swagger UI**: http://localhost:8000/docs
 
 ## API Endpoints
 

@@ -261,28 +261,48 @@ def extract_order_info_from_text_pdf_page_by_page(file_content: bytes) -> Option
 
 def extract_order_info_from_pdf(file: UploadFile) -> Tuple[str, str, date]:
     """Extract first name, last name, and date of birth from a PDF file"""
-    # Read the file content
-    file_content = file.file.read()
-    file.file.seek(0)  # Reset file pointer
+    try:
+        # Read the file content
+        file_content = file.file.read()
+        file.file.seek(0)  # Reset file pointer
+    except Exception as e:
+        logger.error(f"Error reading PDF file: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error reading PDF file. Please ensure the file is not corrupted."
+        )
     
     # Try text-based PDF extraction page by page first
     logger.info("Attempting text-based PDF extraction page by page...")
-    result = extract_order_info_from_text_pdf_page_by_page(file_content)
-    if result:
-        return result
+    try:
+        result = extract_order_info_from_text_pdf_page_by_page(file_content)
+        if result:
+            return result
+    except Exception as e:
+        logger.warning(f"Text extraction failed: {str(e)}")
     
     # If text extraction didn't work, try OCR page by page
     if OCR_AVAILABLE:
         logger.info("Text extraction didn't find all info, attempting OCR extraction page by page...")
-        result = extract_order_info_with_ocr_page_by_page(file_content)
-        if result:
-            return result
+        try:
+            result = extract_order_info_with_ocr_page_by_page(file_content)
+            if result:
+                return result
+        except Exception as e:
+            logger.error(f"OCR extraction failed: {str(e)}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to extract information using OCR. The PDF may be corrupted or unreadable."
+            )
     else:
         logger.warning("OCR not available, cannot process image-based PDFs")
     
     # If we get here, extraction failed
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Could not extract patient name and date of birth from PDF"
+        detail=(
+            "Could not extract patient name and date of birth from PDF. "
+            "Please ensure the PDF contains readable text with 'Patient Name' and 'Date of Birth' fields."
+        )
     )
 
