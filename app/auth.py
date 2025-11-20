@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -8,10 +9,17 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app import models
 
-# Security settings
-SECRET_KEY = "your-secret-key-change-this-in-production"  # In production, use environment variable
+# Security settings - read from environment variables
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production")
+if SECRET_KEY == "your-secret-key-change-this-in-production":
+    import warnings
+    warnings.warn(
+        "Using default SECRET_KEY. Set SECRET_KEY environment variable for production!",
+        UserWarning
+    )
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")

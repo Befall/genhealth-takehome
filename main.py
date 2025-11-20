@@ -1,3 +1,9 @@
+# Load environment variables from .env file FIRST, before any other imports
+from dotenv import load_dotenv
+load_dotenv()
+
+# Now import everything else
+import os
 from fastapi import FastAPI
 from app.database import engine, Base
 from app.routers import orders, auth
