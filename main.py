@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.routers import orders
+from app.routers import orders, auth
 import logging
 
 # Configure logging
@@ -20,6 +20,7 @@ app = FastAPI(
 )
 
 # Include routers
+app.include_router(auth.router)
 app.include_router(orders.router)
 
 
