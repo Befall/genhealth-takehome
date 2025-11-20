@@ -39,3 +39,7 @@ def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
 
+
+@app.get("/routes")
+def list_routes():
+    return [route.path for route in app.router.routes]
