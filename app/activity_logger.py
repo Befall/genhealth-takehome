@@ -1,5 +1,4 @@
-import json
-from fastapi import Request, Response
+from fastapi import Request
 from sqlalchemy.orm import Session
 from app import models
 from app.database import SessionLocal
@@ -9,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 def log_activity(
-    user_id: int,
-    method: str,
-    endpoint: str,
-    status_code: int,
+    user_id: int = None,
+    method: str = None,
+    endpoint: str = None,
+    status_code: int = None,
     request_body: str = None,
     response_body: str = None,
     ip_address: str = None,
@@ -58,51 +57,4 @@ def get_user_agent(request: Request) -> str:
     """Get user agent from request"""
     return request.headers.get("user-agent")
 
-
-async def log_request_response(
-    request: Request,
-    response: Response,
-    user_id: int,
-    db: Session,
-    response_body_str: str = None
-):
-    """Log the request and response"""
-    # Get request body if available (for non-GET requests)
-    request_body = None
-    if request.method in ["POST", "PUT", "PATCH"]:
-        try:
-            # For file uploads, we can't read the body again, so skip it
-            if "multipart/form-data" not in request.headers.get("content-type", ""):
-                body = await request.body()
-                if body:
-                    # Try to parse as JSON
-                    try:
-                        request_body = json.dumps(json.loads(body.decode()))
-                    except:
-                        request_body = body.decode()[:1000]  # Limit length
-        except:
-            pass
-    
-    # Use provided response body or try to get it from response
-    response_body = response_body_str
-    if response_body is None:
-        try:
-            if hasattr(response, 'body'):
-                body_str = response.body.decode() if isinstance(response.body, bytes) else str(response.body)
-                response_body = body_str[:1000] if body_str else None  # Limit length
-        except:
-            pass
-    
-    # Log the activity
-    log_activity(
-        user_id=user_id,
-        method=request.method,
-        endpoint=str(request.url.path),
-        status_code=response.status_code,
-        request_body=request_body,
-        response_body=response_body,
-        ip_address=get_client_ip(request),
-        user_agent=get_user_agent(request),
-        db=db
-    )
 

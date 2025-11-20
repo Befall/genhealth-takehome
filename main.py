@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Now import everything else
-import os
-import traceback
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -29,6 +27,10 @@ app = FastAPI(
     description="REST API for managing orders with CRUD operations",
     version="1.0.0"
 )
+
+# Add activity logging middleware
+from app.middleware import ActivityLoggingMiddleware
+app.add_middleware(ActivityLoggingMiddleware)
 
 # Include routers
 app.include_router(auth.router)

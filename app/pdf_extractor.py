@@ -198,7 +198,7 @@ def extract_order_info_from_text_pdf_page_by_page(file_content: bytes) -> Option
                     logger.warning(f"No text extracted from page {i+1}")
                     continue
                 
-                logger.info(page_text[:500])
+                logger.debug(f"Page {i+1} text (first 500 chars): {page_text[:500]}")
                 # Try to extract all three pieces of information from this page
                 name_result = extract_patient_name(page_text)
                 dob = extract_date_of_birth(page_text)

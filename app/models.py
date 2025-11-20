@@ -33,7 +33,7 @@ class ActivityLog(Base):
     __tablename__ = "activity_logs"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Nullable for unauthenticated requests
     method = Column(String, nullable=False)  # GET, POST, PUT, DELETE
     endpoint = Column(String, nullable=False)  # /order/, /order/1, etc.
     status_code = Column(Integer, nullable=False)
